@@ -45,7 +45,7 @@ func Perform(args Arguments, writer io.Writer) error {
 		switch operation {
 		case "add":
 			item, okItem := args["item"]
-			if !okItem {
+			if item == "" {
 				return errorItemFlag
 			} else {
 				return add(item, fileName)
