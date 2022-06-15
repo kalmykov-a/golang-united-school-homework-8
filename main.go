@@ -27,9 +27,7 @@ type User struct {
 
 func Perform(args Arguments, writer io.Writer) error {
 	fileName := args["fileName"]
-	//проверяем наличие флага имени файла
 	if fileName != "" {
-		//проверяем что файл с таким именем создан, если нет, то создаём
 		file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE, 0755)
 		if err != nil {
 			return fmt.Errorf("cannot open file:%w", err)
@@ -39,7 +37,6 @@ func Perform(args Arguments, writer io.Writer) error {
 		return errorFilenameFlag
 	}
 	operation, okOperation := args["operation"]
-	//Проверяем наличие флага операции
 	if okOperation {
 		switch operation {
 		case "add":
@@ -119,7 +116,7 @@ func add(item string, fileName string, writer io.Writer) error {
 	}
 	for _, v := range users {
 		if v.Id == u.Id {
-			_, err := writer.Write([]byte(fmt.Sprintf("Item with id %s not found", u.Id)))
+			_, err := writer.Write([]byte(fmt.Sprintf("Item with id %s already exists", u.Id)))
 			if err != nil {
 				return fmt.Errorf("cannon write data:%w", err)
 			}
