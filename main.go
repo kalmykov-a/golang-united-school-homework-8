@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"strconv"
 )
 
 var (
@@ -21,7 +20,7 @@ var (
 type Arguments map[string]string
 
 type User struct {
-	Id    int    `json:"id"`
+	Id    string `json:"id"`
 	Email string `json:"email"`
 	Age   int    `json:"age"`
 }
@@ -120,7 +119,7 @@ func add(item string, fileName string) error {
 	}
 	for _, v := range users {
 		if v.Id == u.Id {
-			return fmt.Errorf("tem with id %d already exists", u.Id)
+			return fmt.Errorf("Item with id %s already exists", u.Id)
 		}
 
 	}
@@ -133,10 +132,9 @@ func add(item string, fileName string) error {
 }
 
 func findById(id string, fileName string, writer io.Writer) error {
-	idInt, _ := strconv.Atoi(id)
 	users, _ := getStruct(fileName)
 	for i, v := range users {
-		if idInt == v.Id {
+		if id == v.Id {
 			bytes, err := json.Marshal(users[i])
 			if err != nil {
 				return fmt.Errorf("cannot marshal: %w", err)
@@ -153,11 +151,10 @@ func findById(id string, fileName string, writer io.Writer) error {
 func remove(id string, fileName string, writer io.Writer) error {
 	users, _ := getStruct(fileName)
 	var newUsers []User
-	idInt, _ := strconv.Atoi(id)
 	for i, v := range users {
-		if idInt == v.Id {
+		if id == v.Id {
 			newUsers = append(users[:i], users[i+1:]...)
-			err := writeStruct(fileName, users)
+			err := writeStruct(fileName, newUsers)
 			if err != nil {
 				return fmt.Errorf("cannot write stuct:%w", err)
 			}
