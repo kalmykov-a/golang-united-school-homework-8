@@ -27,9 +27,9 @@ type User struct {
 }
 
 func Perform(args Arguments, writer io.Writer) error {
-	fileName, okFileName := args["fileName"]
+	fileName := args["fileName"]
 	//проверяем наличие флага имени файла
-	if okFileName {
+	if fileName != "" {
 		//проверяем что файл с таким именем создан, если нет, то создаём
 		file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE, 0755)
 		if err != nil {
@@ -53,15 +53,15 @@ func Perform(args Arguments, writer io.Writer) error {
 		case "list":
 			return list(fileName, writer)
 		case "findById":
-			id, okId := args["id"]
-			if okId {
+			id := args["id"]
+			if id != "" {
 				findById(id, fileName, writer)
 			} else {
 				return errorIdFlag
 			}
 		case "remove":
-			id, okId := args["id"]
-			if okId {
+			id := args["id"]
+			if id != "" {
 				remove(id, fileName, writer)
 			} else {
 				return errorIdFlag
@@ -69,7 +69,7 @@ func Perform(args Arguments, writer io.Writer) error {
 		case "":
 			return errorOperationFlag
 		default:
-			return fmt.Errorf("Operation %s not allowed", args["operation"])
+			return fmt.Errorf("Operation %s not allowed!", args["operation"])
 		}
 	} else {
 		return errorOperationFlag
@@ -116,7 +116,13 @@ func add(item string, fileName string) error {
 	u := User{}
 	err := json.Unmarshal([]byte(item), &u)
 	if err != nil {
-		return fmt.Errorf("")
+		return fmt.Errorf("cannot unmarshal file:%w", err)
+	}
+	for _, v := range users {
+		if v.Id == u.Id {
+			return fmt.Errorf("tem with id %d already exists", u.Id)
+		}
+
 	}
 	users = append(users, u)
 	err = writeStruct(fileName, users)
